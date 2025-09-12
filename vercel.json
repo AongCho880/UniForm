@@ -7,7 +7,8 @@
     }
   ],
   "routes": [
+    { "handle": "filesystem" },
     { "src": "/api/(.*)", "dest": "https://intelligent-success-production.up.railway.app/api/$1" },
-    { "src": "/(.*)", "dest": "uniform-frontend/dist/index.html" }
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
