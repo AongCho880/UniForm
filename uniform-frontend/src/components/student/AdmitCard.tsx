@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import html2canvas from 'html2canvas'
-import { jsPDF } from 'jspdf'
+import jsPDF from 'jspdf'
 import { getEligibleInstitutions, type EligibleInstitution } from '@/api/studentExplore'
 
 import type { MyApplication } from '@/api/studentApplications'

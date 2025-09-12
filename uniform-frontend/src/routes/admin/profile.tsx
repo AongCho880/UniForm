@@ -96,7 +96,7 @@ function RouteComponent() {
                 </div>
                 <div>
                   <div className="text-xs uppercase text-gray-500">Last Login</div>
-                  <div className="text-gray-900">{profile.lastLogin ? new Date(profile.lastLogin).toLocaleString() : '—'}</div>
+                  <div className="text-gray-900">{profile.lastLogin ? new Date(profile.lastLogin).toLocaleString() : 'ï¿½'}</div>
                 </div>
               </div>
             </div>
