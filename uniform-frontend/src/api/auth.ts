@@ -98,6 +98,8 @@ export const registerUser = async (userData: {
         dob: backendUser.dob || "",
         examPath: backendUser.examPath || "",
         medium: backendUser.medium || "",
+        sscStream: backendUser.sscStream,
+        hscStream: backendUser.hscStream,
         // Academic details
         sscRoll: backendUser.sscRoll,
         sscRegistration: backendUser.sscRegistration,

@@ -366,6 +366,9 @@ function RouteComponent() {
         medium: formData.medium,
         // Include academic details based on examPath
         ...(formData.examPath === 'NATIONAL' && {
+          // Streams
+          sscStream: formData.sscStream,
+          hscStream: formData.hscStream,
           sscRoll: formData.sscRoll,
           sscRegistration: formData.sscRegistration,
           sscGpa: formData.sscGpa,
