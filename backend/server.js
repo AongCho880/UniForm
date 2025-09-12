@@ -15,16 +15,33 @@ const PORT = process.env.PORT || 5000;
 // This improves accuracy for IP-based rate limiting fallbacks.
 app.set("trust proxy", 1);
 
+// CORS configuration: allow local dev, production, and Vercel previews
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://uniform-49v3.vercel.app",
+  process.env.FRONTEND_ORIGIN || "https://uni-form-app.vercel.app",
+].filter(Boolean)
+
 app.use(
-	cors({
-		origin: [
-			"http://localhost:5173", // local dev
-			"https://uniform-49v3.vercel.app", // production frontend
-		],
-		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-		allowedHeaders: ["Content-Type", "Authorization"],
-		credentials: true,
-	})
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true)
+      const normalize = (s) => (typeof s === 'string' ? s.replace(/\/$/, '') : s)
+      const requestOrigin = normalize(origin)
+      const isWhitelisted = allowedOrigins.some((o) => normalize(o) === requestOrigin)
+      let isVercelPreview = false
+      try {
+        const host = new URL(origin).hostname
+        isVercelPreview = /\.vercel\.app$/.test(host)
+      } catch { /* ignore invalid origin */ }
+      if (isWhitelisted || isVercelPreview) return callback(null, true)
+      return callback(new Error(`Not allowed by CORS: ${origin}`))
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+    credentials: true,
+    optionsSuccessStatus: 204,
+  })
 );
 
 app.use(express.json());

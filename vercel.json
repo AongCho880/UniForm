@@ -1,0 +1,13 @@
+{
+  "builds": [
+    {
+      "src": "uniform-frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
+    }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "https://intelligent-success-production.up.railway.app/api/$1" },
+    { "src": "/(.*)", "dest": "uniform-frontend/dist/index.html" }
+  ]
+}
