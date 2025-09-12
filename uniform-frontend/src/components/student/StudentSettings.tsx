@@ -17,7 +17,6 @@ import DangerZoneTab from './tabs/DangerZoneTab';
 
 interface StudentSettingsProps {
   userData: UserData;
-  onLogout: () => void;
 }
 
 export default function StudentSettings({ userData }: StudentSettingsProps) {

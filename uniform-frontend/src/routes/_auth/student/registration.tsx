@@ -354,6 +354,14 @@ function RouteComponent() {
       const formattedPhone = formatPhoneNumber(formData.phone);
 
       // Prepare user data for API
+      type Stream = 'SCIENCE' | 'ARTS' | 'COMMERCE'
+      const isStream = (v: string): v is Stream => (
+        v === 'SCIENCE' || v === 'ARTS' || v === 'COMMERCE'
+      )
+      const normalizeStream = (v: string | undefined): Stream | undefined => {
+        const up = (v || '').toUpperCase().trim()
+        return isStream(up) ? up : undefined
+      }
       const userData = {
         userName: formData.userName,
         email: formData.email,
@@ -367,8 +375,8 @@ function RouteComponent() {
         // Include academic details based on examPath
         ...(formData.examPath === 'NATIONAL' && {
           // Streams
-          sscStream: formData.sscStream,
-          hscStream: formData.hscStream,
+          sscStream: normalizeStream(formData.sscStream),
+          hscStream: normalizeStream(formData.hscStream),
           sscRoll: formData.sscRoll,
           sscRegistration: formData.sscRegistration,
           sscGpa: formData.sscGpa,

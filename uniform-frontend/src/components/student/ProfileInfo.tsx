@@ -24,6 +24,7 @@ import { Edit, Camera, Save, X, User, Mail, Phone, Calendar, MapPin, BookOpen, G
 import { toast, Toaster } from 'sonner';
 import type { UserData } from '@/components/student/types';
 import { updateUserProfile } from '@/api';
+import type { ProfileData } from '@/api/profile';
 interface ProfileInfoProps {
   userData: UserData;
   onLogout: () => void;
@@ -42,7 +43,7 @@ export default function ProfileInfo({ userData, onLogout, onUpdate }: ProfileInf
   const [profileImage, setProfileImage] = useState<string | null>(null); // preview
   const [profileFile, setProfileFile] = useState<File | null>(null); // actual file to upload
   const [formData, setFormData] = useState<UserData>({ ...userData });
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const handleEditClick = () => {
@@ -141,7 +142,8 @@ export default function ProfileInfo({ userData, onLogout, onUpdate }: ProfileInf
   const handleSaveClick = async () => {
     if (!validateForm()) return;
     setIsLoading(true);
-    const payload: Partial<UserData> = {
+    // Payload for backend update, includes profile image file
+    const backendPayload: ProfileData = {
       profileImage: profileFile ?? undefined,
       fullName: formData.userName,
       phone: formData.phone,
@@ -154,16 +156,28 @@ export default function ProfileInfo({ userData, onLogout, onUpdate }: ProfileInf
     }
     try {
       if (onUpdate) {
-        // Delegate update + toasts to parent handler to avoid duplicates
-        await onUpdate(payload)
+        // Delegate update (without file) to parent handler to avoid duplicates
+        const uiPayload: Partial<UserData> = {
+          userName: formData.userName,
+          phone: formData.phone,
+          address: formData.address,
+          dob: formData.dob,
+          examPath: formData.examPath,
+          medium: formData.medium,
+          sscStream: formData.sscStream,
+          hscStream: formData.hscStream,
+        }
+        await onUpdate(uiPayload)
         setIsEditing(false)
       } else {
         // Fallback: perform update locally and toast here
-        const ok = await updateUserProfile(userData.userId, payload)
+        const ok = await updateUserProfile(userData.userId, backendPayload)
         if (ok) {
           toast.success('Profile Updated', { description: 'Your profile has been updated successfully.' })
           Object.assign(userData, formData)
-          try { localStorage.setItem('user', JSON.stringify(userData)) } catch {}
+          try { localStorage.setItem('user', JSON.stringify(userData)) } catch (e) {
+            void e
+          }
           setIsEditing(false)
         } else {
           toast.error('Update Failed', { description: 'Failed to update your profile. Please try again.' })
