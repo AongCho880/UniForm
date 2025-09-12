@@ -19,7 +19,7 @@ app.use(
 	cors({
 		origin: [
 			"http://localhost:5173", // local dev
-			"https://uniform-49v3.vercel.app", // production frontend
+			"https://uni-form-app.vercel.app/", // production frontend
 		],
 		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 		allowedHeaders: ["Content-Type", "Authorization"],
