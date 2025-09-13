@@ -175,7 +175,11 @@ export function InstitutionManagement(props: InstitutionManagementProps = {}) {
 
   // Function to get category badge color based on category name
   const getCategoryBadgeColor = (categoryName: string) => {
-    switch (categoryName.toLowerCase()) {
+    const lc = categoryName.toLowerCase();
+    if (lc.includes('science') && lc.includes('technology')) {
+      return 'bg-indigo-100 text-indigo-800';
+    }
+    switch (lc) {
       case 'public':
       case 'public institution':
         return 'bg-blue-100 text-blue-800';

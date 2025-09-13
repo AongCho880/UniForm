@@ -14,7 +14,7 @@ import { Building2, MapPin, Phone as PhoneIcon, Mail, Globe, CalendarDays, Tag a
 import { toast } from 'sonner'
 
 // Local categories list (kept in sync with CreateInstitutionDialog)
-const INSTITUTION_CATEGORIES = ['University', 'College']
+const INSTITUTION_CATEGORIES = ['University', 'College', 'Science and Technology University']
 
 const OWNERSHIP_OPTIONS = ['PUBLIC', 'PRIVATE'] as const
 const INSTITUTION_TYPE_OPTIONS = ['GENERAL', 'ENGINEERING'] as const
@@ -48,6 +48,18 @@ function RouteComponent() {
     logoUrl: '',
   })
 
+  // Compute a normalized category name for backend payload based on ownership
+  const computeCategoryNameForPayload = (categoryName?: string, ownership?: string) => {
+    const trimmed = (categoryName || '').trim()
+    if (!trimmed) return undefined
+    const lc = trimmed.toLowerCase()
+    if (lc.includes('science') && lc.includes('technology') && ownership) {
+      const own = String(ownership).toUpperCase() === 'PUBLIC' ? 'Public' : 'Private'
+      return `${own} Science and Technology University`
+    }
+    return trimmed
+  }
+
   // Helpers to map legacy combined categories to separate fields
   const normalizeCategory = (name: string): string => {
     const lc = name.toLowerCase()
@@ -59,6 +71,8 @@ function RouteComponent() {
   const deriveTypeFromCategory = (name: string): '' | 'GENERAL' | 'ENGINEERING' => {
     const lc = name.toLowerCase()
     if (lc.includes('engineering')) return 'ENGINEERING'
+    // Treat Science & Technology as GENERAL type in our schema
+    if (lc.includes('science') && lc.includes('technology')) return 'GENERAL'
     if (lc.includes('general') || lc.includes('national') || lc.includes('college')) return 'GENERAL'
     return ''
   }
@@ -130,7 +144,7 @@ function RouteComponent() {
       const payload = {
         name: form.name.trim(),
         shortName: form.shortName?.trim() || undefined,
-        categoryName: form.categoryName?.trim() || undefined,
+        categoryName: computeCategoryNameForPayload(form.categoryName, form.ownership) || undefined,
         ownership: (form.ownership as 'PUBLIC' | 'PRIVATE') || undefined,
         type: (form.type as 'GENERAL' | 'ENGINEERING') || undefined,
         description: form.description?.trim() || undefined,

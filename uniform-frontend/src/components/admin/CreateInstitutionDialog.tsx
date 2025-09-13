@@ -25,7 +25,7 @@ import { Plus } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 
 // Predefined categories for the dropdown
-const INSTITUTION_CATEGORIES = ['University', 'College'];
+const INSTITUTION_CATEGORIES = ['University', 'College', 'Science and Technology University'];
 
 const OWNERSHIP_OPTIONS = ['PUBLIC', 'PRIVATE'] as const;
 const INSTITUTION_TYPE_OPTIONS = ['GENERAL', 'ENGINEERING'] as const;
@@ -69,6 +69,17 @@ export function CreateInstitutionDialog({ onInstitutionCreated }: CreateInstitut
   const [isSubmitting, setIsSubmitting] = useState(false);
   const currentYear = useMemo(() => new Date().getFullYear(), []);
 
+  const computeCategoryNameForPayload = (categoryName?: string, ownership?: string) => {
+    const trimmed = (categoryName || '').trim();
+    if (!trimmed) return undefined;
+    const lc = trimmed.toLowerCase();
+    if (lc.includes('science') && lc.includes('technology') && ownership) {
+      const own = String(ownership).toUpperCase() === 'PUBLIC' ? 'Public' : 'Private';
+      return `${own} Science and Technology University`;
+    }
+    return trimmed;
+  };
+
   const handleCreateInstitution = async () => {
     if (!newInstitution.name.trim()) {
       toast.error('Institution name is required');
@@ -83,7 +94,7 @@ export function CreateInstitutionDialog({ onInstitutionCreated }: CreateInstitut
       const payload: CreateInstitutionPayload = {
         name: newInstitution.name.trim(),
         shortName: newInstitution.shortName?.trim() || undefined,
-        categoryName: newInstitution.categoryName?.trim() || undefined,
+        categoryName: computeCategoryNameForPayload(newInstitution.categoryName, newInstitution.ownership) || undefined,
         ownership: (newInstitution.ownership as 'PUBLIC' | 'PRIVATE') || undefined,
         type: (newInstitution.type as 'GENERAL' | 'ENGINEERING') || undefined,
         description: newInstitution.description?.trim() || undefined,
