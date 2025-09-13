@@ -48,7 +48,7 @@ function RouteComponent() {
           const merged: User | null = p && a ? { ...p, ...a } : (p || a)
           setProfile(merged)
           const ids = new Set<string>()
-          ;(apps || []).forEach((app: MyApplication) => { if (app.unitId) ids.add(app.unitId) })
+            ; (apps || []).forEach((app: MyApplication) => { if (app.unitId) ids.add(app.unitId) })
           setAppliedUnits(ids)
         } catch { /* ignore */ }
       } finally { setLoading(false) }
@@ -187,8 +187,8 @@ function RouteComponent() {
                         {applying === u.unitId
                           ? 'Applying...'
                           : appliedUnits.has(u.unitId)
-                          ? 'Applied'
-                          : (u.eligible === false ? 'Not Eligible' : 'Apply')}
+                            ? 'Applied'
+                            : (u.eligible === false ? 'Not Eligible' : 'Apply')}
                       </Button>
                     </div>
                     {u.description ? (
@@ -232,15 +232,15 @@ function RouteComponent() {
       <Dialog open={centerOpen} onOpenChange={(open) => { setCenterOpen(open); if (!open) setPendingUnit(null) }}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Choose Exam Center</DialogTitle>
-            <DialogDescription>Select your preferred division for the exam center.</DialogDescription>
+            <DialogTitle>Choose Exam Region</DialogTitle>
+            <DialogDescription>Select your preferred division for the exam region.</DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
             <label className="text-xs text-gray-600">Division</label>
             <Select value={center} onValueChange={(v) => setCenter(v)}>
               <SelectTrigger className="w-full"><SelectValue placeholder="Select division" /></SelectTrigger>
               <SelectContent>
-                {['Dhaka','Chattogram','Rajshahi','Khulna','Barishal','Sylhet','Rangpur','Mymensingh'].map((d) => (
+                {['Dhaka', 'Chattogram', 'Rajshahi', 'Khulna', 'Barishal', 'Sylhet', 'Rangpur', 'Mymensingh'].map((d) => (
                   <SelectItem key={d} value={d}>{d}</SelectItem>
                 ))}
               </SelectContent>

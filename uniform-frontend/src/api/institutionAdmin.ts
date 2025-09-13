@@ -5,22 +5,18 @@ export const institutionAdminLogin = async (
   email: string,
   password: string
 ): Promise<AdminUser | null> => {
-  try {
-    const response = await api.post('/admin/auth/login', { email, password })
-    if (response.data.status === 200) {
-      localStorage.setItem('accessToken', response.data.access_token)
-      const user: AdminUser = {
-        userId: '',
-        email,
-        password: '',
-        role: 'INSTITUTION_ADMIN',
-      }
-      return user
+  const response = await api.post('/admin/auth/login', { email, password })
+  if (response.data.status === 200) {
+    localStorage.setItem('accessToken', response.data.access_token)
+    const user: AdminUser = {
+      userId: '',
+      email,
+      password: '',
+      role: 'INSTITUTION_ADMIN',
     }
-    return null
-  } catch (error) {
-    throw error
+    return user
   }
+  return null
 }
 
 export const getInstitutionDashboard = async (): Promise<{ units: number; students: number; applications: number }> => {
@@ -73,3 +69,10 @@ export const updateMyInstitution = async (payload: { shortName?: string }) => {
   return response.data.institution as InstitutionInfo
 }
 
+export const updateInstitutionAdminPassword = async (
+  oldPassword: string,
+  newPassword: string,
+): Promise<{ status: number; message: string }> => {
+  const response = await api.put('/admin/update-password', { oldPassword, newPassword })
+  return response.data as { status: number; message: string }
+}
