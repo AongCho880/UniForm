@@ -28,6 +28,10 @@ export function AdminManagement() {
   const [institutions, setInstitutions] = useState<Institution[]>([])
   const [admins, setAdmins] = useState<Admin[]>([])
   const [loadingAdmins, setLoadingAdmins] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState<number | 'ALL'>(10)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalItems, setTotalItems] = useState(0)
 
   // Create admin form state
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
@@ -44,19 +48,12 @@ export function AdminManagement() {
 
   useEffect(() => {
     fetchInstitutions()
-    void (async () => {
-      try {
-        setLoadingAdmins(true)
-        const { admins } = await adminApi.getAdmins()
-        setAdmins(admins || [])
-      } catch (error) {
-        toast.error('Failed to load admins')
-        console.error('Error fetching admins:', error)
-      } finally {
-        setLoadingAdmins(false)
-      }
-    })()
   }, [])
+
+  useEffect(() => {
+    void fetchAdmins(currentPage, itemsPerPage)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, itemsPerPage])
 
   const fetchInstitutions = async () => {
     try {
@@ -68,6 +65,35 @@ export function AdminManagement() {
     } catch (error) {
       toast.error('Failed to load institutions')
       console.error('Error fetching institutions:', error)
+    }
+  }
+
+  const fetchAdmins = async (page: number = 1, limit: number | 'ALL' = 10) => {
+    try {
+      setLoadingAdmins(true)
+      let response: { admins: Admin[]; metadata?: { totalPages: number; currentPage: number; currentLimit: number; totalItems: number } };
+      if (limit === 'ALL') {
+        response = await adminApi.getAdmins()
+      } else {
+        response = await adminApi.getAdmins({ page, limit })
+      }
+
+      setAdmins(response.admins || [])
+      if (response.metadata) {
+        setTotalPages(response.metadata.totalPages || 1)
+        setCurrentPage(response.metadata.currentPage || 1)
+        setTotalItems(response.metadata.totalItems || (response.admins?.length ?? 0))
+      } else {
+        // No pagination metadata when requesting ALL
+        setTotalPages(1)
+        setCurrentPage(1)
+        setTotalItems(response.admins?.length ?? 0)
+      }
+    } catch (error) {
+      toast.error('Failed to load admins')
+      console.error('Error fetching admins:', error)
+    } finally {
+      setLoadingAdmins(false)
     }
   }
 
@@ -97,16 +123,9 @@ export function AdminManagement() {
       setShowPassword(false)
       setShowConfirmPassword(false)
       setPasswordError('')
-      // Refresh admin list
-      try {
-        setLoadingAdmins(true)
-        const { admins } = await adminApi.getAdmins()
-        setAdmins(admins || [])
-      } catch (error) {
-        console.error('Failed to refresh admins', error)
-      } finally {
-        setLoadingAdmins(false)
-      }
+      // Refresh admin list (show newest on first page)
+      setCurrentPage(1)
+      await fetchAdmins(1, itemsPerPage)
     } catch (error) {
       toast.error('Failed to create admin')
       console.error('Error creating admin:', error)
@@ -206,6 +225,35 @@ export function AdminManagement() {
           <CardDescription>View and manage all institution administrators</CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-sm text-gray-600">
+              {totalItems === 0 ? 'No results' : (() => {
+                const pageSize = itemsPerPage === 'ALL' ? totalItems : itemsPerPage
+                const startIdx = itemsPerPage === 'ALL' ? (totalItems > 0 ? 1 : 0) : (pageSize ? (currentPage - 1) * (pageSize as number) + 1 : 0)
+                const endIdx = itemsPerPage === 'ALL' ? totalItems : Math.min(totalItems, currentPage * (pageSize as number))
+                return <>Showing {startIdx}–{endIdx} of {totalItems} admins</>
+              })()}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Rows per page</span>
+              <Select value={String(itemsPerPage)} onValueChange={(v) => {
+                const parsed = v === 'ALL' ? 'ALL' : parseInt(v)
+                setItemsPerPage(parsed as number | 'ALL')
+                setCurrentPage(1)
+              }}>
+                <SelectTrigger className="w-[100px] h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="ALL">All</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           {loadingAdmins ? (
             <div className="flex justify-center items-center h-24">Loading admins...</div>
           ) : admins.length === 0 ? (
@@ -243,6 +291,33 @@ export function AdminManagement() {
                 ))}
               </TableBody>
             </Table>
+          )}
+
+          {/* Pagination Controls */}
+          {itemsPerPage !== 'ALL' && totalItems > 0 && (
+            <div className="flex items-center justify-between space-x-2 py-4">
+              <div className="text-sm text-gray-500">
+                Page {currentPage} of {totalPages}
+              </div>
+              <div className="flex space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage <= 1}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage >= totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
           )}
         </CardContent>
       </Card>
