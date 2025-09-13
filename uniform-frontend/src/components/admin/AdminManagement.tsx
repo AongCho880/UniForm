@@ -61,7 +61,10 @@ export function AdminManagement() {
   const fetchInstitutions = async () => {
     try {
       const response = await adminApi.getInstitutions()
-      setInstitutions(response.institutions)
+      const sorted = (response.institutions || []).slice().sort((a, b) =>
+        (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' })
+      )
+      setInstitutions(sorted)
     } catch (error) {
       toast.error('Failed to load institutions')
       console.error('Error fetching institutions:', error)
@@ -175,11 +178,16 @@ export function AdminManagement() {
                     <SelectValue placeholder="Select an institution" />
                   </SelectTrigger>
                   <SelectContent>
-                    {institutions.map((institution) => (
-                      <SelectItem key={institution.institutionId} value={institution.institutionId}>
-                        {institution.name}
-                      </SelectItem>
-                    ))}
+                    {institutions.map((institution) => {
+                      const label = institution.shortName && institution.shortName.trim().length > 0
+                        ? `${institution.name} (${institution.shortName})`
+                        : institution.name
+                      return (
+                        <SelectItem key={institution.institutionId} value={institution.institutionId}>
+                          {label}
+                        </SelectItem>
+                      )
+                    })}
                   </SelectContent>
                 </Select>
               </div>
