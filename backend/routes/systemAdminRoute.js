@@ -32,7 +32,8 @@ router.get(
 router.get(
 	"/admins",
 	systemAdminMiddleware,
-	cacheRoute({ ttl: 300 }),
+	// Return fresh admin list immediately after mutations
+	cacheRoute({ ttl: 0 }),
 	systemAdminAuthController.fetchAdmins
 );
 
