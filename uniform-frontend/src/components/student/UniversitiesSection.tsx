@@ -53,6 +53,17 @@ export default function UniversitiesSection() {
                     })
                   }
                 >
+                  <TableCell className="w-12">
+                    {inst.logoUrl ? (
+                      <img
+                        src={inst.logoUrl}
+                        alt={`${inst.name} logo`}
+                        className="h-8 w-8 rounded object-cover"
+                        loading="lazy"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    ) : null}
+                  </TableCell>
                   <TableCell className="text-gray-900 font-medium">
                     {inst.name}
                     {inst.shortName ? ` (${inst.shortName})` : ''}

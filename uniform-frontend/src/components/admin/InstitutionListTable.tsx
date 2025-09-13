@@ -146,7 +146,16 @@ export function InstitutionListTable({
                     className="flex items-center text-inherit hover:underline"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <Building2 className="mr-2 h-4 w-4 text-gray-500" />
+                    {institution.logoUrl ? (
+                      <img
+                        src={institution.logoUrl}
+                        alt={`${institution.name} logo`}
+                        className="mr-2 h-6 w-6 rounded object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <Building2 className="mr-2 h-4 w-4 text-gray-500" />
+                    )}
                     <span>{highlight(institution.name, query)}</span>
                   </Link>
                 </TableCell>
