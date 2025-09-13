@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/context/admin/useAuth'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { Building, Eye, EyeOff, Loader2, Check } from 'lucide-react'
+import { Building, Eye, EyeOff, Loader2, Check, HomeIcon } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -182,6 +182,13 @@ function RouteComponent() {
                 )}
               </Button>
             </form>
+            <Link
+              to='/'
+              className="flex items-center justify-center gap-1 mt-4 font-medium text-sm text-center text-gray-900 hover:text-gray-600 transition"
+            >
+              <HomeIcon className='size-4' />
+              Go Home
+            </Link>
             <div className="mt-6 pt-6 border-t border-gray-200">
               <p className="text-xs text-center text-gray-500">
                 UniForm - A Web Engineering Lab Project for Bangladesh University Admissions
