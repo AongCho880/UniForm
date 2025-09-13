@@ -87,7 +87,9 @@ export const adminApi = {
   },
 
   // Admins
-  getAdmins: async (params?: { page?: number; limit?: number; search?: string; institutionId?: string }): Promise<{ admins: Admin[]; metadata?: unknown }> => {
+  getAdmins: async (
+    params?: { page?: number; limit?: number; search?: string; institutionId?: string }
+  ): Promise<{ admins: Admin[]; metadata?: { totalPages: number; currentPage: number; currentLimit: number; totalItems: number } }> => {
     const response = await api.get('/system/admins', { params });
     return response.data;
   },

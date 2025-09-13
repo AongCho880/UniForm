@@ -1,7 +1,7 @@
 // placeholder
 // uniform-frontend/src/components/admin/AdminManagement.tsx
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -46,29 +46,8 @@ export function AdminManagement() {
   const [isDeleteAdminDialogOpen, setIsDeleteAdminDialogOpen] = useState(false)
   const [adminToDelete, setAdminToDelete] = useState<Admin | null>(null)
 
-  useEffect(() => {
-    fetchInstitutions()
-  }, [])
-
-  useEffect(() => {
-    void fetchAdmins(currentPage, itemsPerPage)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, itemsPerPage])
-
-  const fetchInstitutions = async () => {
-    try {
-      const response = await adminApi.getInstitutions()
-      const sorted = (response.institutions || []).slice().sort((a, b) =>
-        (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' })
-      )
-      setInstitutions(sorted)
-    } catch (error) {
-      toast.error('Failed to load institutions')
-      console.error('Error fetching institutions:', error)
-    }
-  }
-
-  const fetchAdmins = async (page: number = 1, limit: number | 'ALL' = 10) => {
+  // Data loaders
+  const fetchAdmins = useCallback(async (page: number = 1, limit: number | 'ALL' = 10) => {
     try {
       setLoadingAdmins(true)
       let response: { admins: Admin[]; metadata?: { totalPages: number; currentPage: number; currentLimit: number; totalItems: number } };
@@ -95,7 +74,29 @@ export function AdminManagement() {
     } finally {
       setLoadingAdmins(false)
     }
+  }, [])
+
+  const fetchInstitutions = async () => {
+    try {
+      const response = await adminApi.getInstitutions()
+      const sorted = (response.institutions || []).slice().sort((a, b) =>
+        (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' })
+      )
+      setInstitutions(sorted)
+    } catch (error) {
+      toast.error('Failed to load institutions')
+      console.error('Error fetching institutions:', error)
+    }
   }
+
+  // Effects
+  useEffect(() => {
+    fetchInstitutions()
+  }, [])
+
+  useEffect(() => {
+    void fetchAdmins(currentPage, itemsPerPage)
+  }, [fetchAdmins, currentPage, itemsPerPage])
 
   const handleCreateAdmin = async () => {
     if (!newAdmin.email.trim() || !newAdmin.password.trim()) {
