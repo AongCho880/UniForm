@@ -86,7 +86,15 @@ function RouteComponent() {
         const rawCategory = data.InstitutionCategory?.name ?? ''
         const normalizedCategory = normalizeCategory(rawCategory)
         const initialType = (data.type as 'GENERAL' | 'ENGINEERING' | null) ?? deriveTypeFromCategory(rawCategory)
-        const initialOwnership = (data.ownership as 'PUBLIC' | 'PRIVATE' | null) ?? (rawCategory.toLowerCase().includes('national') ? 'PUBLIC' : '')
+        const lc = rawCategory.toLowerCase()
+        const inferredOwnership = lc.includes('public')
+          ? 'PUBLIC'
+          : lc.includes('private')
+            ? 'PRIVATE'
+            : lc.includes('national')
+              ? 'PUBLIC'
+              : ''
+        const initialOwnership = (data.ownership as 'PUBLIC' | 'PRIVATE' | null) ?? (inferredOwnership as '' | 'PUBLIC' | 'PRIVATE')
 
         setForm({
           name: data.name ?? '',
@@ -120,7 +128,11 @@ function RouteComponent() {
         name: institution.name ?? '',
         shortName: institution.shortName ?? '',
         categoryName: normalizeCategory(rawCategory),
-        ownership: (institution.ownership as 'PUBLIC' | 'PRIVATE' | null) ?? (rawCategory.toLowerCase().includes('national') ? 'PUBLIC' : ''),
+        ownership: ((): '' | 'PUBLIC' | 'PRIVATE' => {
+          const lc = rawCategory.toLowerCase()
+          const inferred = lc.includes('public') ? 'PUBLIC' : (lc.includes('private') ? 'PRIVATE' : (lc.includes('national') ? 'PUBLIC' : ''))
+          return (institution.ownership as 'PUBLIC' | 'PRIVATE' | null) ?? inferred
+        })(),
         type: (institution.type as 'GENERAL' | 'ENGINEERING' | null) ?? deriveTypeFromCategory(rawCategory),
         description: institution.description ?? '',
         address: institution.address ?? '',
@@ -185,6 +197,16 @@ function RouteComponent() {
     if (val === undefined || val === null || String(val).trim() === '') return '—'
     return String(val)
   }
+
+  // Ensure current category remains selectable even if not in the static list
+  const availableCategories = useMemo(() => {
+    const list = [...INSTITUTION_CATEGORIES]
+    const current = (form.categoryName || '').trim()
+    if (current && !list.includes(current)) {
+      return [current, ...list]
+    }
+    return list
+  }, [form.categoryName])
 
 const getCategoryBadgeColor = (categoryName: string) => {
   void categoryName
@@ -404,7 +426,7 @@ const getCategoryBadgeColor = (categoryName: string) => {
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {INSTITUTION_CATEGORIES.map((c) => (
+                        {availableCategories.map((c) => (
                           <SelectItem key={c} value={c}>{c}</SelectItem>
                         ))}
                       </SelectContent>

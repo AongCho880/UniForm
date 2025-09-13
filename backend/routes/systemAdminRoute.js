@@ -69,7 +69,8 @@ router.put(
 router.get(
     "/institutions",
     systemAdminMiddleware,
-    cacheRoute({ ttl: 300 }),
+    // Return fresh data to reflect changes immediately in admin UI
+    cacheRoute({ ttl: 0 }),
     systemAdminAuthController.fetchInstitutions
 );
 
