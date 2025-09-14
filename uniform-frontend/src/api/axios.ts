@@ -1,8 +1,10 @@
 // src/api/axios.ts
 import axios from "axios";
 
-// Update the API URL to match your backend
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+// Base API URL
+// - In production on Vercel, leave VITE_API_URL unset to use same-origin "/api"
+// - In local dev, set VITE_API_URL="http://localhost:5000/api" (or use a Vite proxy)
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 // Create axios instance with default config
 const api = axios.create({

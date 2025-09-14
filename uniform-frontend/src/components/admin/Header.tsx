@@ -73,12 +73,16 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'institutions', label: 'Institutions' },
     { id: 'admins', label: 'Admins' },
+    { id: 'notices', label: 'Notices' },
     { id: 'visualization', label: 'Data Visualization' },
   ];
   const handleTabChange = (tab: string) => {
     onTabChange(tab);
     // Also navigate to the corresponding route
     switch (tab) {
+      case 'notifications':
+        navigate({ to: '/admin/notifications' });
+        break;
       case 'dashboard':
         navigate({ to: '/admin/dashboard' });
         break;
@@ -87,6 +91,9 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
         break;
       case 'admins':
         navigate({ to: '/admin/admins' });
+        break;
+      case 'notices':
+        navigate({ to: '/admin/notices' });
         break;
       case 'visualization':
         navigate({ to: '/admin/visualization' });
@@ -147,7 +154,7 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
             <div className="flex items-center">
               {/* Desktop User Account Menu */}
               <div className="hidden md:flex items-center">
-                <Button variant="ghost" size="sm" className="mr-2">
+                <Button variant="ghost" size="sm" className="mr-2" onClick={() => handleTabChange('notifications')}>
                   <Bell className="h-5 w-5" />
                   <Badge className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">3</Badge>
                 </Button>
@@ -244,7 +251,7 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
                           </div>
                         </nav>
                         <div className="flex items-center justify-between mb-4">
-                          <Button variant="ghost" size="sm" className="justify-start">
+                          <Button variant="ghost" size="sm" className="justify-start" onClick={() => handleTabChange('notifications')}>
                             <Bell className="mr-2 h-4 w-4" />
                             Notifications
                             <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">3</Badge>

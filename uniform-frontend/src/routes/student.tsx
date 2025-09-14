@@ -34,6 +34,7 @@ function RouteComponent() {
     const p = location.pathname
     if (p.startsWith('/student/academic-info')) return 'academic-info'
     if (p.startsWith('/student/applications')) return 'applications'
+    if (p.startsWith('/student/notices')) return 'notifications'
     if (p.startsWith('/student/universities') || p.startsWith('/student/institutions')) return 'universities'
     if (p.startsWith('/student/settings')) return 'settings'
     return 'dashboard'
@@ -45,6 +46,7 @@ function RouteComponent() {
       universities: '/student/institutions',
       'academic-info': '/student/academic-info',
       applications: '/student/applications',
+      notifications: '/student/notices',
       settings: '/student/settings',
     }
     navigate({ to: map[section] || '/student/dashboard' })

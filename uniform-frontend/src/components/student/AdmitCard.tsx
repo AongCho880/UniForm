@@ -20,8 +20,11 @@ export default function AdmitCard({ app, student, institutionLogoUrl }: AdmitCar
   )
 
   const API_ORIGIN = useMemo(() => {
-    const API_URL = ((import.meta as unknown as { env?: { VITE_API_URL?: string } }).env?.VITE_API_URL) || 'http://localhost:5000/api'
-    return API_URL.replace(/\/api\/?$/, '')
+    const API_URL = ((import.meta as unknown as { env?: { VITE_API_URL?: string } }).env?.VITE_API_URL) || '/api'
+    if (API_URL.startsWith('http')) {
+      try { return new URL(API_URL).origin } catch { /* ignore */ }
+    }
+    return window.location.origin
   }, [])
   const appLogoUrl = app?.institution?.logoUrl || null
 

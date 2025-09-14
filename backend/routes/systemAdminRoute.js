@@ -9,6 +9,7 @@ import { cacheRoute } from "../middleware/cache.js";
 import { bustUserCache } from "../middleware/cacheBust.js";
 import unitController from "../controllers/unitController.js";
 import systemAdminMiddleware from "../middleware/systemAdminMiddleware.js";
+import noticeController from "../controllers/noticeController.js";
 
 const router = Router();
 
@@ -99,6 +100,45 @@ router.get(
     "/dashboard",
     systemAdminMiddleware,
     unitController.dashboard
+);
+
+// Notices (System Admin)
+router.post(
+  "/notices",
+  systemAdminMiddleware,
+  noticeController.systemCreate
+);
+
+router.get(
+  "/notices",
+  systemAdminMiddleware,
+  noticeController.systemList
+);
+
+router.put(
+  "/notices/:id",
+  systemAdminMiddleware,
+  noticeController.systemUpdate
+);
+
+router.delete(
+  "/notices/:id",
+  systemAdminMiddleware,
+  noticeController.systemDelete
+);
+
+// Notification feed for system admin: institution notices
+router.get(
+  "/notices/feed",
+  systemAdminMiddleware,
+  noticeController.systemFeed
+);
+
+// Notice detail by ID (System Admin)
+router.get(
+  "/notices/:id",
+  systemAdminMiddleware,
+  noticeController.systemGetById
 );
 
 export default router;

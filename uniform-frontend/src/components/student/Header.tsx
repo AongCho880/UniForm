@@ -12,7 +12,8 @@ import {
   LogOut,
   Menu,
   X,
-  Settings
+  Settings,
+  Bell
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { UserData } from '@/components/student/types';
@@ -116,6 +117,15 @@ export default function Header({ userData, activeSection, setActiveSection }: He
               </Button>
               {/* Settings link removed from desktop navbar */}
             </nav>
+            {/* Notifications icon (desktop) */}
+            <Button
+              variant="ghost"
+              className="relative"
+              onClick={() => setActiveSection('notifications')}
+              aria-label="Notifications"
+            >
+              <Bell className="h-5 w-5" />
+            </Button>
             {/* User menu */}
             <div className="relative">
               <Button
@@ -177,6 +187,17 @@ export default function Header({ userData, activeSection, setActiveSection }: He
                       >
                         <BookOpen className="mr-3 h-5 w-5" />
                         Academic Info
+                      </Button>
+                      <Button
+                        variant="link"
+                        onClick={() => {
+                          setActiveSection('notifications');
+                          setUserMenuOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-start px-4 py-3 text-base font-medium ${activeSection === 'notifications' ? 'text-black' : 'text-gray-600'}`}
+                      >
+                        <Bell className="mr-3 h-5 w-5" />
+                        Notifications
                       </Button>
                       {/* Settings dropdown option */}
                       <Button
@@ -274,6 +295,17 @@ export default function Header({ userData, activeSection, setActiveSection }: He
             >
               <BookOpen className="mr-3 h-5 w-5" />
               Academic Info
+            </Button>
+            <Button
+              variant="link"
+              onClick={() => {
+                setActiveSection('notifications');
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center justify-start px-4 py-3 text-base font-medium ${activeSection === 'notifications' ? 'text-black' : 'text-gray-600'}`}
+            >
+              <Bell className="mr-3 h-5 w-5" />
+              Notifications
             </Button>
             {/* Settings mobile menu option */}
             <Button

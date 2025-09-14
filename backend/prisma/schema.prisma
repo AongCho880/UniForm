@@ -9,6 +9,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ==============
+// Notice Enums
+// ==============
+enum NoticeAudience {
+  STUDENT
+  INSTITUTION
+  BOTH
+}
+
+enum NoticeCategory {
+  GENERAL
+  ACADEMIC
+}
+
 // Enums for institution ownership and type
 enum Ownership {
   PUBLIC
@@ -27,45 +41,45 @@ enum Stream {
 }
 
 model Student {
-  studentId String   @id @default(uuid())
-  fullName  String   @db.VarChar(190)
-  email     String   @unique
-  phone     String?  @db.VarChar(15)
-  password  String   @db.VarChar(255)
-  address   String?  @db.VarChar(300)
-  role      String   @default("STUDENT")
-  dob       DateTime
-  profile   String?
-  sscStream Stream?
-  hscStream Stream?
+  studentId          String   @id @default(uuid())
+  fullName           String   @db.VarChar(190)
+  email              String   @unique
+  phone              String?  @db.VarChar(15)
+  password           String   @db.VarChar(255)
+  address            String?  @db.VarChar(300)
+  role               String   @default("STUDENT")
+  dob                DateTime
+  profile            String?
+  sscStream          Stream?
+  hscStream          Stream?
   // New fields from frontend
-  examPath    String?   // NATIONAL or MADRASHA
-  medium      String?   // Bangla, English, Arabic
+  examPath           String? // NATIONAL or MADRASHA
+  medium             String? // Bangla, English, Arabic
   // SSC Details
-  sscRoll        String? @db.VarChar(50)
-  sscRegistration String? @db.VarChar(50)
-  sscGpa         Float?
-  sscYear        Int?
-  sscBoard       String? @db.VarChar(50)
+  sscRoll            String?  @db.VarChar(50)
+  sscRegistration    String?  @db.VarChar(50)
+  sscGpa             Float?
+  sscYear            Int?
+  sscBoard           String?  @db.VarChar(50)
   // HSC Details
-  hscRoll        String? @db.VarChar(50)
-  hscRegistration String? @db.VarChar(50)
-  hscGpa         Float?
-  hscYear        Int?
-  hscBoard       String? @db.VarChar(50)
+  hscRoll            String?  @db.VarChar(50)
+  hscRegistration    String?  @db.VarChar(50)
+  hscGpa             Float?
+  hscYear            Int?
+  hscBoard           String?  @db.VarChar(50)
   // Dakhil Details
-  dakhilRoll     String? @db.VarChar(50)
-  dakhilRegistration String? @db.VarChar(50)
-  dakhilGpa      Float?
-  dakhilYear     Int?
-  dakhilBoard    String? @db.VarChar(50)
+  dakhilRoll         String?  @db.VarChar(50)
+  dakhilRegistration String?  @db.VarChar(50)
+  dakhilGpa          Float?
+  dakhilYear         Int?
+  dakhilBoard        String?  @db.VarChar(50)
   // Alim Details
-  alimRoll       String? @db.VarChar(50)
-  alimRegistration String? @db.VarChar(50)
-  alimGpa        Float?
-  alimYear       Int?
-  alimBoard      String? @db.VarChar(50)
-  
+  alimRoll           String?  @db.VarChar(50)
+  alimRegistration   String?  @db.VarChar(50)
+  alimGpa            Float?
+  alimYear           Int?
+  alimBoard          String?  @db.VarChar(50)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
@@ -87,30 +101,33 @@ model Form {
 }
 
 model Systemadmin {
-  systemAdminId String   @id @default(uuid())
-  email         String   @unique
-  password      String   @db.VarChar(255)
-  role          String   @default("SYSTEM_ADMIN")
+  systemAdminId String    @id @default(uuid())
+  email         String    @unique
+  password      String    @db.VarChar(255)
+  role          String    @default("SYSTEM_ADMIN")
   lastLogin     DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now()) @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+
+  // Back-relation: notices created by this system admin
+  notices Notice[]
 }
 
 model Admin {
-  adminId   String   @id @default(uuid())
-  email     String   @unique
-  password  String   @db.VarChar(255)
-  role      String   @default("INSTITUTION_ADMIN")
-  lastLogin DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  adminId       String       @id @default(uuid())
+  email         String       @unique
+  password      String       @db.VarChar(255)
+  role          String       @default("INSTITUTION_ADMIN")
+  lastLogin     DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @default(now()) @updatedAt
   institutionId String?
   institution   Institution? @relation(fields: [institutionId], references: [institutionId])
 }
 
 model Institution {
-  institutionId String @id @default(uuid())
-  name          String @unique
+  institutionId String  @id @default(uuid())
+  name          String  @unique
   shortName     String?
 
   description     String?  @db.Text
@@ -137,28 +154,31 @@ model Institution {
 
   InstitutionCategory InstitutionCategory? @relation(fields: [institutionCategoryInstitutionCategoryId], references: [institutionCategoryId])
 
+  // Back-relation: notices created by this institution
+  notices Notice[]
+
   @@index([ownership])
   @@index([type])
 }
 
 model Unit {
-  unitId        String   @id @default(uuid())
+  unitId        String  @id @default(uuid())
   name          String
   description   String?
   institutionId String
-  isActive      Boolean  @default(true)
+  isActive      Boolean @default(true)
 
-  applicationDeadline     DateTime? // When applications close
-  maxApplications        Int?      // Maximum number of applications allowed
+  applicationDeadline    DateTime? // When applications close
+  maxApplications        Int? // Maximum number of applications allowed
   autoCloseAfterDeadline Boolean   @default(true) // Auto close after deadline
 
   // Unit-level exam schedule (applies to all applications of this unit by default)
-  examDate     DateTime?
-  examTime     String?   @db.VarChar(50)
-  examCenter   String?   @db.VarChar(100)
+  examDate   DateTime?
+  examTime   String?   @db.VarChar(50)
+  examCenter String?   @db.VarChar(100)
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now()) @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   requirements UnitRequirement[]
   institution  Institution       @relation(fields: [institutionId], references: [institutionId], onDelete: Cascade)
@@ -171,20 +191,20 @@ model Unit {
 }
 
 model UnitRequirement {
-  id        String   @id @default(uuid())
-  unitId    String
-  sscStream Stream
-  hscStream Stream
-  minSscGPA Float?
-  minHscGPA Float?
+  id             String   @id @default(uuid())
+  unitId         String
+  sscStream      Stream
+  hscStream      Stream
+  minSscGPA      Float?
+  minHscGPA      Float?
   minCombinedGPA Float?
   // Eligibility by passing year (Bangladesh admission style)
-  minSscYear Int?
-  maxSscYear Int?
-  minHscYear Int?
-  maxHscYear Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  minSscYear     Int?
+  maxSscYear     Int?
+  minHscYear     Int?
+  maxHscYear     Int?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
 
   unit Unit @relation(fields: [unitId], references: [unitId], onDelete: Cascade)
 
@@ -229,12 +249,12 @@ model Application {
   notes         String?   @db.Text
 
   // Exam details (set by institution)
-  seatNo        String?   @db.VarChar(50)
-  examDate      DateTime?
-  examTime      String?   @db.VarChar(50) // human-readable time slot
-  examCenter    String?   @db.VarChar(100)
+  seatNo           String?   @db.VarChar(50)
+  examDate         DateTime?
+  examTime         String?   @db.VarChar(50) // human-readable time slot
+  examCenter       String?   @db.VarChar(100)
   // Student preferred center (division-wise) captured during apply
-  centerPreference String? @db.VarChar(100)
+  centerPreference String?   @db.VarChar(100)
 
   student     Student     @relation(fields: [studentId], references: [studentId])
   unit        Unit        @relation(fields: [unitId], references: [unitId])
@@ -246,4 +266,32 @@ model Application {
   @@index([studentId])
   @@index([unitId])
   @@index([institutionId])
+}
+
+// ==============
+// Notice Model
+// ==============
+model Notice {
+  noticeId    String         @id @default(uuid())
+  title       String         @db.VarChar(255)
+  content     String         @db.Text
+  audience    NoticeAudience
+  category    NoticeCategory @default(GENERAL)
+  published   Boolean        @default(true)
+  publishedAt DateTime?      @default(now())
+
+  // Origin/author
+  createdBySystemAdminId String?
+  systemAdmin            Systemadmin? @relation(fields: [createdBySystemAdminId], references: [systemAdminId])
+
+  institutionId String?
+  institution   Institution? @relation(fields: [institutionId], references: [institutionId])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([audience])
+  @@index([category])
+  @@index([institutionId])
+  @@index([createdBySystemAdminId])
 }

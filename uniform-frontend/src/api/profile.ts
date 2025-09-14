@@ -9,8 +9,10 @@ export const getUserProfile = async (): Promise<User | null> => {
     const response = await api.get("/profile");
     if (response.data.status === 200) {
       const backendProfile = response.data.profile;
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const API_ORIGIN = API_URL.replace(/\/api\/?$/, "");
+      const API_URL = import.meta.env.VITE_API_URL || "/api";
+      const API_ORIGIN = API_URL.startsWith("http")
+        ? new URL(API_URL).origin
+        : window.location.origin;
       const profileRaw = backendProfile.profile as string | undefined;
       const profileUrl = profileRaw
         ? (profileRaw.startsWith('data:') ? profileRaw : `${API_ORIGIN}/public/images/${profileRaw}`)
@@ -66,8 +68,10 @@ export const getAcademicDetails = async (): Promise<User | null> => {
     const response = await api.get("/academicInfo");
     if (response.data.status === 200) {
       const academicDetails = response.data.academicDetails;
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const API_ORIGIN = API_URL.replace(/\/api\/?$/, "");
+      const API_URL = import.meta.env.VITE_API_URL || "/api";
+      const API_ORIGIN = API_URL.startsWith("http")
+        ? new URL(API_URL).origin
+        : window.location.origin;
       const profileRaw = academicDetails.profile as string | undefined;
       const profileUrl = profileRaw
         ? (profileRaw.startsWith('data:') ? profileRaw : `${API_ORIGIN}/public/images/${profileRaw}`)

@@ -8,6 +8,7 @@ import { cacheRoute } from "../middleware/cache.js";
 import { studentLimiter, studentWriteLimiter, loginLimiter } from "../middleware/rateLimiters.js";
 import authMiddleware from "../middleware/Authenticate.js";
 import studentMiddleware from "../middleware/studentMiddleware.js";
+import noticeController from "../controllers/noticeController.js";
 const router = Router();
 
 // Auth routes
@@ -86,6 +87,22 @@ router.delete(
   studentMiddleware,
   studentWriteLimiter,
   studentApplicationController.delete
+);
+
+// Student: Notice feed (system + institution academic)
+router.get(
+  "/notices",
+  studentMiddleware,
+  studentLimiter,
+  noticeController.studentFeed
+);
+
+// Student: Notice detail by ID
+router.get(
+  "/notices/:id",
+  studentMiddleware,
+  studentLimiter,
+  noticeController.studentGetById
 );
 
 export default router;

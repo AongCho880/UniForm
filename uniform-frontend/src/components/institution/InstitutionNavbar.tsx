@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { Menu, User, Settings, LogOut, Mail, Clock, Building } from 'lucide-react'
+import { Menu, User, Settings, LogOut, Mail, Clock, Building, Bell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export function InstitutionNavbar() {
@@ -97,6 +97,9 @@ export function InstitutionNavbar() {
             <Link to="/institution/applications" className={`inst-nav-link inline-flex items-center gap-1 ${location.pathname === '/institution/applications' || location.pathname.startsWith('/institution/applications/') ? 'active' : ''}`}>
               Applications
             </Link>
+            <Link to="/institution/notices" className={`inst-nav-link inline-flex items-center gap-1 ${location.pathname === '/institution/notices' ? 'active' : ''}`}>
+              Notices
+            </Link>
           </nav>
 
           {/* User menu + Mobile trigger (right) */}
@@ -128,6 +131,12 @@ export function InstitutionNavbar() {
                   <button onClick={() => navigate({ to: '/institution/applications' })} className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-md ${(location.pathname === '/institution/applications' || location.pathname.startsWith('/institution/applications/')) ? 'bg-gray-100 text-gray-900 font-medium' : 'text-gray-700 hover:bg-gray-100'}`}>
                     Applications
                   </button>
+                  <button onClick={() => navigate({ to: '/institution/notices' })} className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-md ${location.pathname === '/institution/notices' ? 'bg-gray-100 text-gray-900 font-medium' : 'text-gray-700 hover:bg-gray-100'}`}>
+                    Notices
+                  </button>
+                  <button onClick={() => navigate({ to: '/institution/notifications' })} className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-md ${location.pathname === '/institution/notifications' ? 'bg-gray-100 text-gray-900 font-medium' : 'text-gray-700 hover:bg-gray-100'}`}>
+                    Notifications
+                  </button>
                   <button onClick={() => navigate({ to: '/institution/settings' })} className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-md ${location.pathname === '/institution/settings' ? 'bg-gray-100 text-gray-900 font-medium' : 'text-gray-700 hover:bg-gray-100'}`}>
                     <Settings className="h-4 w-4" />
                     Settings
@@ -144,6 +153,12 @@ export function InstitutionNavbar() {
                 </nav>
               </SheetContent>
             </Sheet>
+            {/* Notifications icon (desktop) */}
+            <Link to="/institution/notifications" className="hidden md:inline-flex">
+              <Button variant="ghost" className="h-9 w-9 p-0" aria-label="Notifications">
+                <Bell className="h-5 w-5" />
+              </Button>
+            </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="hidden md:inline-flex items-center gap-2 rounded-full focus:outline-none">

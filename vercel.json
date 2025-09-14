@@ -4,11 +4,14 @@
       "src": "uniform-frontend/package.json",
       "use": "@vercel/static-build",
       "config": { "distDir": "dist" }
+    },
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     { "handle": "filesystem" },
-    { "src": "/api/(.*)", "dest": "https://intelligent-success-production.up.railway.app/api/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }

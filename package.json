@@ -1,0 +1,27 @@
+{
+  "name": "uniform-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "postinstall": "prisma generate --schema backend/prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.14.0",
+    "@vinejs/vine": "^3.0.1",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-fileupload": "^1.5.2",
+    "express-rate-limit": "^8.0.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.14.0"
+  }
+}
+
