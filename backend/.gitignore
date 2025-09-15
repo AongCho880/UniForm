@@ -39,8 +39,6 @@ prisma/migrations/
 prisma/generated/
 
 # Lock files
-package-lock.json
-yarn.lock
 
 # Exclude generated Prisma client (if present)
 /generated/prisma
