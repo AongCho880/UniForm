@@ -1,0 +1,39 @@
+services:
+  # Backend: Node web service
+  - type: web
+    name: uniform-backend
+    env: node
+    plan: free
+    rootDirectory: backend
+    buildCommand: |
+      npm ci
+      npx prisma generate --schema prisma/schema.prisma
+      # Apply DB migrations if DATABASE_URL is set
+      npx prisma migrate deploy --schema prisma/schema.prisma
+    startCommand: node server.js
+    autoDeploy: true
+    healthCheckPath: /
+    envVars:
+      - key: DATABASE_URL
+        sync: false  # Set in Render dashboard
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_ORIGIN
+        value: https://your-frontend.onrender.com  # Replace after frontend is created
+      # Optional during early testing
+      # - key: DISABLE_RATE_LIMIT
+      #   value: "true"
+
+  # Frontend: Static site (Vite)
+  - type: static_site
+    name: uniform-frontend
+    plan: free
+    rootDirectory: uniform-frontend
+    buildCommand: |
+      npm ci
+      npm run build
+    publishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://your-backend.onrender.com/api  # Replace with backend URL after it deploys
+

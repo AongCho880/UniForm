@@ -40,13 +40,15 @@ export function createApp({ basePath = "/api" } = {}) {
         const requestOrigin = normalizeOrigin(origin);
         const isWhitelisted = allowedOrigins.some((o) => normalizeOrigin(o) === requestOrigin);
         let isVercelPreview = false;
+        let isRenderPreview = false;
         try {
           const host = new URL(origin).hostname;
           isVercelPreview = /\.vercel\.app$/.test(host);
+          isRenderPreview = /\.onrender\.com$/.test(host);
         } catch {
           /* ignore invalid origin */
         }
-        if (isWhitelisted || isVercelPreview) return callback(null, true);
+        if (isWhitelisted || isVercelPreview || isRenderPreview) return callback(null, true);
         return callback(new Error(`Not allowed by CORS: ${origin}`));
       },
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
@@ -98,4 +100,3 @@ export function createApp({ basePath = "/api" } = {}) {
 }
 
 export default createApp;
-
