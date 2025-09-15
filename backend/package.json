@@ -3,14 +3,16 @@
   "version": "1.0.0",
   "main": "server.js",
   "type": "module",
+  "description": "",
   "scripts": {
+    "build": "prisma generate",
     "start": "node server.js",
-    "server": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "migrate:deploy": "prisma migrate deploy"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "@prisma/client": "^6.14.0",
     "@vinejs/vine": "^3.0.1",
