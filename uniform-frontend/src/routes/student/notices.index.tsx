@@ -26,21 +26,21 @@ function StudentNoticeBoard() {
   }, [])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       <h1 className="text-2xl font-bold text-gray-900">Notice Board</h1>
       {loading ? (
         <div className="text-gray-600">Loading notices...</div>
       ) : notices.length === 0 ? (
         <div className="text-gray-600">No notices available.</div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6">
           {notices.map((n) => (
             <Card
               key={n.noticeId}
               className="border-gray-200 cursor-pointer hover:bg-gray-50"
               onClick={() => navigate({ to: '/student/notices/$id', params: { id: n.noticeId } })}
             >
-              <CardHeader>
+              <CardHeader className="space-y-2 p-4 sm:p-6">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg text-gray-900">
                     {n.title}
@@ -52,7 +52,7 @@ function StudentNoticeBoard() {
                 </div>
                 <div className="text-xs text-gray-500">{n.publishedAt ? new Date(n.publishedAt).toLocaleString() : ''}</div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 sm:p-6 pt-0">
                 <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">{n.content}</div>
                 <div className="mt-4 text-xs text-gray-500">Issued by: {n.institutionId ? 'Institution' : 'System Admin'}</div>
               </CardContent>
@@ -65,4 +65,3 @@ function StudentNoticeBoard() {
 }
 
 export default Route
-

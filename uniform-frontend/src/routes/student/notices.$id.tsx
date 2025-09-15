@@ -31,10 +31,10 @@ function RouteComponent() {
   }, [params.id])
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 sm:space-y-8">
       <Link to="/student/notices"><Button variant="outline">Back to Notices</Button></Link>
       <Card className="border-gray-200">
-        <CardHeader>
+        <CardHeader className="space-y-2 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl text-gray-900">{loading ? 'Loading...' : notice?.title || 'Not found'}</CardTitle>
             {notice && (
@@ -48,7 +48,7 @@ function RouteComponent() {
             <div className="text-xs text-gray-500">{notice.publishedAt ? new Date(notice.publishedAt).toLocaleString() : ''} • Issued by: {notice.institutionId ? 'Institution' : 'System Admin'}</div>
           )}
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6 pt-0">
           {loading ? (
             <div className="text-gray-600">Loading...</div>
           ) : !notice ? (
