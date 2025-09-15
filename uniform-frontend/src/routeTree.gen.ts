@@ -43,6 +43,7 @@ import { Route as AdminInstitutionsRouteImport } from './routes/admin/institutio
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
 import { Route as AdminAdminsRouteImport } from './routes/admin/admins'
 import { Route as AuthUnauthorizedRouteImport } from './routes/_auth/unauthorized'
+import { Route as StudentNoticesIndexRouteImport } from './routes/student/notices.index'
 import { Route as StudentInstitutionsIndexRouteImport } from './routes/student/institutions.index'
 import { Route as InstitutionUnitsIndexRouteImport } from './routes/institution/units.index'
 import { Route as AdminInstitutionsIndexRouteImport } from './routes/admin/institutions.index'
@@ -232,6 +233,11 @@ const AuthUnauthorizedRoute = AuthUnauthorizedRouteImport.update({
   path: '/unauthorized',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StudentNoticesIndexRoute = StudentNoticesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StudentNoticesRoute,
+} as any)
 const StudentInstitutionsIndexRoute =
   StudentInstitutionsIndexRouteImport.update({
     id: '/',
@@ -375,6 +381,7 @@ export interface FileRoutesByFullPath {
   '/admin/institutions/': typeof AdminInstitutionsIndexRoute
   '/institution/units': typeof InstitutionUnitsIndexRoute
   '/student/institutions/': typeof StudentInstitutionsIndexRoute
+  '/student/notices/': typeof StudentNoticesIndexRoute
   '/institution/units/$unitId/edit': typeof InstitutionUnitsUnitIdEditRoute
 }
 export interface FileRoutesByTo {
@@ -403,7 +410,6 @@ export interface FileRoutesByTo {
   '/student/academic-info': typeof StudentAcademicInfoRoute
   '/student/applications': typeof StudentApplicationsRoute
   '/student/dashboard': typeof StudentDashboardRoute
-  '/student/notices': typeof StudentNoticesRouteWithChildren
   '/student/settings': typeof StudentSettingsRoute
   '/admin': typeof AdminIndexRoute
   '/institution': typeof InstitutionIndexRoute
@@ -424,6 +430,7 @@ export interface FileRoutesByTo {
   '/admin/institutions': typeof AdminInstitutionsIndexRoute
   '/institution/units': typeof InstitutionUnitsIndexRoute
   '/student/institutions': typeof StudentInstitutionsIndexRoute
+  '/student/notices': typeof StudentNoticesIndexRoute
   '/institution/units/$unitId/edit': typeof InstitutionUnitsUnitIdEditRoute
 }
 export interface FileRoutesById {
@@ -478,6 +485,7 @@ export interface FileRoutesById {
   '/admin/institutions/': typeof AdminInstitutionsIndexRoute
   '/institution/units/': typeof InstitutionUnitsIndexRoute
   '/student/institutions/': typeof StudentInstitutionsIndexRoute
+  '/student/notices/': typeof StudentNoticesIndexRoute
   '/institution/units/$unitId/edit': typeof InstitutionUnitsUnitIdEditRoute
 }
 export interface FileRouteTypes {
@@ -533,6 +541,7 @@ export interface FileRouteTypes {
     | '/admin/institutions/'
     | '/institution/units'
     | '/student/institutions/'
+    | '/student/notices/'
     | '/institution/units/$unitId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -561,7 +570,6 @@ export interface FileRouteTypes {
     | '/student/academic-info'
     | '/student/applications'
     | '/student/dashboard'
-    | '/student/notices'
     | '/student/settings'
     | '/admin'
     | '/institution'
@@ -582,6 +590,7 @@ export interface FileRouteTypes {
     | '/admin/institutions'
     | '/institution/units'
     | '/student/institutions'
+    | '/student/notices'
     | '/institution/units/$unitId/edit'
   id:
     | '__root__'
@@ -635,6 +644,7 @@ export interface FileRouteTypes {
     | '/admin/institutions/'
     | '/institution/units/'
     | '/student/institutions/'
+    | '/student/notices/'
     | '/institution/units/$unitId/edit'
   fileRoutesById: FileRoutesById
 }
@@ -905,6 +915,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthUnauthorizedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/student/notices/': {
+      id: '/student/notices/'
+      path: '/'
+      fullPath: '/student/notices/'
+      preLoaderRoute: typeof StudentNoticesIndexRouteImport
+      parentRoute: typeof StudentNoticesRoute
+    }
     '/student/institutions/': {
       id: '/student/institutions/'
       path: '/'
@@ -1111,10 +1128,12 @@ const StudentInstitutionsRouteWithChildren =
 
 interface StudentNoticesRouteChildren {
   StudentNoticesIdRoute: typeof StudentNoticesIdRoute
+  StudentNoticesIndexRoute: typeof StudentNoticesIndexRoute
 }
 
 const StudentNoticesRouteChildren: StudentNoticesRouteChildren = {
   StudentNoticesIdRoute: StudentNoticesIdRoute,
+  StudentNoticesIndexRoute: StudentNoticesIndexRoute,
 }
 
 const StudentNoticesRouteWithChildren = StudentNoticesRoute._addFileChildren(
