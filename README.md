@@ -1,78 +1,146 @@
-# 🎓 Uniform - Integrated System for University Applicants
+# UniForm — Integrated Admissions Platform
 
-UniForm is a centralized web application designed to simplify the university admission process in Bangladesh. Built as part of a Web Engineering Lab course, the system enables students to apply to multiple university admission units with a single academic profile. It also empowers universities to manage unit-based admission criteria, ensuring transparency and efficiency in the process.
+UniForm streamlines university admissions by connecting Students, Institutions, and System Admins in one platform. Students apply using a single academic profile, Institutions manage unit-based criteria and applications, and Admins oversee the ecosystem and publish notices.
 
----
+—
 
-## 🚀 Features
+## Monorepo Structure
 
--   🔐 Secure authentication system (JWT-based) for Students and Admins
--   📝 One-time academic form submission reused across applications
--   🏛️ University unit management (A, B, C, D or custom labels)
--   🎯 Stream and GPA-based eligibility validation
--   📦 RESTful API with Express & Prisma ORM
--   🐳 Dockerized backend for scalable deployment
--   ⚙️ CI/CD integration with GitHub Actions
--   🌐 Frontend deployable on Vercel
+- `backend/` — Node.js + Express API (Prisma + PostgreSQL), mounted at `/api`
+- `uniform-frontend/` — React 19 + Vite + TanStack Router + Tailwind CSS
+- `docs/` — Documentation (User Manual, screenshots placeholders)
 
----
+—
 
-## 🧱 Tech Stack
+## Key Features
 
-| Layer          | Technology                      |
-| -------------- | ------------------------------- |
-| Frontend       | React + Vite (Vercel)           |
-| Backend        | Node.js + Express               |
-| ORM/Database   | Prisma + PostgreSQL             |
-| Authentication | JSON Web Tokens (JWT)           |
-| DevOps         | Docker + GitHub Actions         |
-| Hosting        | Vercel (Frontend), Docker (API) |
+- Authentication and role-based access: Student, Institution, Admin (JWT)
+- Student: Academic profile, eligibility-based exploration, applications, admit details
+- Institution: Manage units, review applications, publish academic notices
+- Admin: Manage institutions/admins, publish system notices, dashboards/visualizations
+- Notices: System and Institution (Academic) with student-facing feed and details
 
-## 🛠️ Getting Started
+—
 
-### 1. Clone the repository
+## Tech Stack
 
-```bash
-git clone https://github.com/taqiismail10/Uniform.git
-cd Uniform/backend
-```
+- Frontend: React 19, Vite, TanStack Router, Tailwind CSS
+- Backend: Node.js, Express, Prisma ORM
+- Database: PostgreSQL
+- Auth: JSON Web Tokens (JWT)
+- Deployment: Render (Web Service + Static Site)
 
-### 2. Install dependencies
+—
 
-```bash
-npm install
-```
+## Getting Started (Local)
 
-### 3. Environment Variables
+Prerequisites: Node.js 20+ (or 22+), PostgreSQL 14+, Git
 
-This project uses environment variables for configuration. The actual `.env` file is not included in the repository for security reasons.
-
-1. Copy the example file:
-    ```bash
-    cp .env.example .env
-    ```
-2. Fill in the required values in your new `.env` file.
-
-> **Note:** Refer to `.env.example` for all required variables. If you are unsure about any value, contact the development team.
-
-### 4. Run the development server
+1) Clone
 
 ```bash
-npm run server
+git clone https://github.com/AongCho880/UniForm.git
+cd UniForm
 ```
 
-The server should now be running at `http://localhost:5000` (or the port you set in `.env`).
+2) Backend — Configure & Run
 
-**UniForm** is a proprietary software product developed by  
-**Taqi Ismail**, **Aong Cho Thing Marma**, and **Md. Sadman Sami Khan**.
+Create `backend/.env` with at least:
 
-All rights are reserved. The source code, design, and intellectual property of UniForm are the exclusive property of the authors and may not be copied, modified, distributed, or used in whole or in part without prior written permission.
+```env
+PORT=5000
+JWT_SECRET=change-me-to-a-long-random-string
+DATABASE_URL=postgresql://user:pass@host:5432/dbname?sslmode=require
+# When deploying, set FRONTEND_ORIGIN to your frontend URL
+# FRONTEND_ORIGIN=https://your-frontend.onrender.com
+```
 
-Unauthorized use, reproduction, or redistribution of this software or any of its components is strictly prohibited and may result in legal action.
+Install deps and prepare the DB:
 
-If you are interested in using or licensing UniForm for commercial or institutional purposes, please contact the development team at:
+```bash
+cd backend
+npm ci
+npx prisma generate --schema prisma/schema.prisma
+npx prisma migrate dev --schema prisma/schema.prisma
+npm start   # starts on http://localhost:5000 (base path /api)
+```
 
-> 📧 taqiismail10@gmail.com
-> 🌐 https://uniform-bd.com (coming soon)
+3) Frontend — Run Dev Server
 
-© 2025 UniForm Platform. All rights reserved.
+```bash
+cd ../uniform-frontend
+npm ci
+npm run dev   # opens http://localhost:5173
+```
+
+Notes:
+- In local dev, the Vite proxy forwards `/api` → `http://localhost:5000`, so you typically do not need a frontend `.env`.
+- Axios base URL resolves to `import.meta.env.VITE_API_URL || '/api'`.
+
+—
+
+## Configuration & Environment Variables
+
+Backend (`backend/.env`):
+- `PORT` — default `5000`
+- `DATABASE_URL` — PostgreSQL connection string
+- `JWT_SECRET` — long random string used to sign tokens
+- `FRONTEND_ORIGIN` — your deployed frontend origin (e.g., `https://uniform-frontend.onrender.com`)
+- `DISABLE_RATE_LIMIT` — set to `true` to disable rate limiting (optional for testing)
+
+Frontend (`uniform-frontend/.env` when deploying):
+- `VITE_API_URL` — set to your backend URL with `/api`, e.g., `https://your-backend.onrender.com/api`
+
+—
+
+## Deploy on Render (Backend + Frontend)
+
+This repo includes `render.yaml` to create two services via Blueprint deploy:
+
+1) Backend (Web Service)
+- Root directory: `backend`
+- Build command: `npm ci && npx prisma generate --schema prisma/schema.prisma && npx prisma migrate deploy --schema prisma/schema.prisma`
+- Start command: `node server.js`
+- Health check path: `/`
+- Env vars: `DATABASE_URL`, `JWT_SECRET`, `FRONTEND_ORIGIN` (and optionally `DISABLE_RATE_LIMIT=true`)
+
+2) Frontend (Static Site)
+- Root directory: `uniform-frontend`
+- Build command: `npm ci && npm run build`
+- Publish directory: `dist`
+- Env var: `VITE_API_URL=https://<your-backend>.onrender.com/api`
+- Add rewrite rule: `/* -> /index.html` (SPA routing)
+
+Steps:
+- Push your changes to GitHub.
+- In Render: New → Blueprint → pick this repo → Apply.
+- Update `FRONTEND_ORIGIN` on the backend with your static site URL.
+- Update `VITE_API_URL` on the frontend with your backend URL + `/api`.
+
+—
+
+## Documentation & Resources
+
+- User Manual (roles & screenshots): `docs/USER_MANUAL.md`
+- Backend base URL (local): `http://localhost:5000/api`
+- Frontend (local dev): `http://localhost:5173`
+
+Useful scripts:
+- Backend: `npm start` (prod), `npm run server` (dev with nodemon)
+- Frontend: `npm run dev`, `npm run build`, `npm run preview`
+
+—
+
+## Troubleshooting
+
+- Frontend can’t reach API in production: ensure `VITE_API_URL` points to `<backend>/api` and CORS `FRONTEND_ORIGIN` is set.
+- 401/Unauthorized: log in with a role that matches the route guard (Student/Institution/Admin).
+- Prisma errors: verify `DATABASE_URL` and run `npx prisma migrate deploy` (prod) or `migrate dev` (local).
+- SPA 404s on refresh: add the rewrite rule `/* -> /index.html` to your static site.
+
+—
+
+## License & Credits
+
+This project is provided for educational and deployment purposes. Replace this section with your licensing terms if needed.
+
