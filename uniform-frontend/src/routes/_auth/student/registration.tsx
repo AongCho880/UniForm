@@ -66,6 +66,15 @@ function validateYear(year: string): boolean {
   return !isNaN(yearValue) && yearValue >= 1990 && yearValue <= currentYear;
 }
 
+// Validation for exact digit roll/registration
+function validateRoll(value: string): boolean {
+  return /^\d{6}$/.test(value.trim());
+}
+
+function validateRegistrationNo(value: string): boolean {
+  return /^\d{10}$/.test(value.trim());
+}
+
 export const Route = createFileRoute('/_auth/student/registration')({
   component: RouteComponent,
 })
@@ -116,6 +125,16 @@ function RouteComponent() {
     alimBoard: '',
   })
 
+  // Year options
+  const currentYear = new Date().getFullYear()
+  const allYears: string[] = Array.from({ length: currentYear - 1990 + 1 }, (_, i) => String(1990 + i))
+  const hscEligibleYears: string[] = allYears.filter(y => (
+    !formData.sscYear || (parseInt(y) >= parseInt(formData.sscYear) + 2)
+  ))
+  const alimEligibleYears: string[] = allYears.filter(y => (
+    !formData.dakhilYear || (parseInt(y) >= parseInt(formData.dakhilYear) + 2)
+  ))
+
   // Validate a single field
   const validateField = (name: string, value: string): string => {
     switch (name) {
@@ -141,20 +160,40 @@ function RouteComponent() {
         return formData.examPath === 'NATIONAL' && !value ? 'Please select SSC stream' : '';
       case 'hscStream':
         return formData.examPath === 'NATIONAL' && !value ? 'Please select HSC stream' : '';
-      case 'sscRoll':
-        return formData.examPath === 'NATIONAL' && !value.trim() ? 'SSC roll number is required' : '';
-      case 'sscRegistration':
-        return formData.examPath === 'NATIONAL' && !value.trim() ? 'SSC registration number is required' : '';
+      case 'sscRoll': {
+        if (formData.examPath === 'NATIONAL') {
+          if (!value.trim()) return 'SSC roll number is required';
+          if (!validateRoll(value)) return 'Roll must be exactly 6 digits';
+        }
+        return '';
+      }
+      case 'sscRegistration': {
+        if (formData.examPath === 'NATIONAL') {
+          if (!value.trim()) return 'SSC registration number is required';
+          if (!validateRegistrationNo(value)) return 'Registration must be exactly 10 digits';
+        }
+        return '';
+      }
       case 'sscGpa':
         return formData.examPath === 'NATIONAL' && !validateGPA(value) ? 'Please enter a valid SSC GPA (0-5)' : '';
       case 'sscYear':
         return formData.examPath === 'NATIONAL' && !validateYear(value) ? 'Please enter a valid SSC year' : '';
       case 'sscBoard':
         return formData.examPath === 'NATIONAL' && !value ? 'Please select SSC board' : '';
-      case 'hscRoll':
-        return formData.examPath === 'NATIONAL' && !value.trim() ? 'HSC roll number is required' : '';
-      case 'hscRegistration':
-        return formData.examPath === 'NATIONAL' && !value.trim() ? 'HSC registration number is required' : '';
+      case 'hscRoll': {
+        if (formData.examPath === 'NATIONAL') {
+          if (!value.trim()) return 'HSC roll number is required';
+          if (!validateRoll(value)) return 'Roll must be exactly 6 digits';
+        }
+        return '';
+      }
+      case 'hscRegistration': {
+        if (formData.examPath === 'NATIONAL') {
+          if (!value.trim()) return 'HSC registration number is required';
+          if (!validateRegistrationNo(value)) return 'Registration must be exactly 10 digits';
+        }
+        return '';
+      }
       case 'hscGpa':
         return formData.examPath === 'NATIONAL' && !validateGPA(value) ? 'Please enter a valid HSC GPA (0-5)' : '';
       case 'hscYear': {
@@ -176,20 +215,40 @@ function RouteComponent() {
       }
       case 'hscBoard':
         return formData.examPath === 'NATIONAL' && !value ? 'Please select HSC board' : '';
-      case 'dakhilRoll':
-        return formData.examPath === 'MADRASHA' && !value.trim() ? 'Dakhil roll number is required' : '';
-      case 'dakhilRegistration':
-        return formData.examPath === 'MADRASHA' && !value.trim() ? 'Dakhil registration number is required' : '';
+      case 'dakhilRoll': {
+        if (formData.examPath === 'MADRASHA') {
+          if (!value.trim()) return 'Dakhil roll number is required';
+          if (!validateRoll(value)) return 'Roll must be exactly 6 digits';
+        }
+        return '';
+      }
+      case 'dakhilRegistration': {
+        if (formData.examPath === 'MADRASHA') {
+          if (!value.trim()) return 'Dakhil registration number is required';
+          if (!validateRegistrationNo(value)) return 'Registration must be exactly 10 digits';
+        }
+        return '';
+      }
       case 'dakhilGpa':
         return formData.examPath === 'MADRASHA' && !validateGPA(value) ? 'Please enter a valid Dakhil GPA (0-5)' : '';
       case 'dakhilYear':
         return formData.examPath === 'MADRASHA' && !validateYear(value) ? 'Please enter a valid Dakhil year' : '';
       case 'dakhilBoard':
         return formData.examPath === 'MADRASHA' && !value ? 'Please select Dakhil board' : '';
-      case 'alimRoll':
-        return formData.examPath === 'MADRASHA' && !value.trim() ? 'Alim roll number is required' : '';
-      case 'alimRegistration':
-        return formData.examPath === 'MADRASHA' && !value.trim() ? 'Alim registration number is required' : '';
+      case 'alimRoll': {
+        if (formData.examPath === 'MADRASHA') {
+          if (!value.trim()) return 'Alim roll number is required';
+          if (!validateRoll(value)) return 'Roll must be exactly 6 digits';
+        }
+        return '';
+      }
+      case 'alimRegistration': {
+        if (formData.examPath === 'MADRASHA') {
+          if (!value.trim()) return 'Alim registration number is required';
+          if (!validateRegistrationNo(value)) return 'Registration must be exactly 10 digits';
+        }
+        return '';
+      }
       case 'alimGpa':
         return formData.examPath === 'MADRASHA' && !validateGPA(value) ? 'Please enter a valid Alim GPA (0-5)' : '';
       case 'alimYear': {
@@ -233,7 +292,18 @@ function RouteComponent() {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+    const { name } = e.target
+    let { value } = e.target
+
+    // Sanitize numeric-only inputs for roll and registration
+    const rollFields = new Set(['sscRoll', 'hscRoll', 'dakhilRoll', 'alimRoll'])
+    const regFields = new Set(['sscRegistration', 'hscRegistration', 'dakhilRegistration', 'alimRegistration'])
+    if (rollFields.has(name)) {
+      value = value.replace(/\D/g, '').slice(0, 6)
+    } else if (regFields.has(name)) {
+      value = value.replace(/\D/g, '').slice(0, 10)
+    }
+
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -320,12 +390,52 @@ function RouteComponent() {
       [name]: value
     }))
 
-    // Clear error when user selects an option
+    // Clear own error
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
         [name]: ''
       }))
+    }
+
+    // Proactively validate/select-dependent rules
+    if (name === 'hscYear' || name === 'alimYear') {
+      const err = validateField(name, value)
+      setErrors(prev => ({ ...prev, [name]: err }))
+    }
+
+    if (name === 'sscYear' && formData.hscYear) {
+      const sscYearVal = parseInt(value)
+      const hscYearVal = parseInt(formData.hscYear)
+      let hscError = ''
+      if (
+        formData.examPath === 'NATIONAL' &&
+        !isNaN(sscYearVal) &&
+        !isNaN(hscYearVal) &&
+        validateYear(value) &&
+        validateYear(formData.hscYear) &&
+        hscYearVal < sscYearVal + 2
+      ) {
+        hscError = 'HSC passing year must be at least 2 years after SSC passing year'
+      }
+      setErrors(prev => ({ ...prev, hscYear: hscError }))
+    }
+
+    if (name === 'dakhilYear' && formData.alimYear) {
+      const dakhilYearVal = parseInt(value)
+      const alimYearVal = parseInt(formData.alimYear)
+      let alimError = ''
+      if (
+        formData.examPath === 'MADRASHA' &&
+        !isNaN(dakhilYearVal) &&
+        !isNaN(alimYearVal) &&
+        validateYear(value) &&
+        validateYear(formData.alimYear) &&
+        alimYearVal < dakhilYearVal + 2
+      ) {
+        alimError = 'Alim passing year must be at least 2 years after Dakhil passing year'
+      }
+      setErrors(prev => ({ ...prev, alimYear: alimError }))
     }
   }
 
@@ -696,6 +806,10 @@ function RouteComponent() {
                         value={formData.sscRoll}
                         onChange={handleChange}
                         onBlur={handleBlur}
+                        inputMode="numeric"
+                        pattern="[0-9]{6}"
+                        title="Enter exactly 6 digits"
+                        maxLength={6}
                         required
                         disabled={isLoading}
                       />
@@ -720,6 +834,10 @@ function RouteComponent() {
                         value={formData.sscRegistration}
                         onChange={handleChange}
                         onBlur={handleBlur}
+                        inputMode="numeric"
+                        pattern="[0-9]{10}"
+                        title="Enter exactly 10 digits"
+                        maxLength={10}
                         required
                         disabled={isLoading}
                       />
@@ -762,20 +880,20 @@ function RouteComponent() {
                       <Label htmlFor="sscYear" className="text-gray-700 font-medium">
                         Passing Year
                       </Label>
-                      <Input
-                        type="number"
-                        id="sscYear"
-                        name="sscYear"
-                        placeholder="SSC Passing Year"
-                        min="1990"
-                        max={new Date().getFullYear()}
-                        className={`w-full px-4 py-3 border ${errors.sscYear ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition`}
+                      <Select
                         value={formData.sscYear}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        required
+                        onValueChange={(value) => handleSelectChange('sscYear', value)}
                         disabled={isLoading}
-                      />
+                      >
+                        <SelectTrigger className={`w-full ${errors.sscYear ? 'border-red-500' : 'border-gray-300'}`}>
+                          <SelectValue placeholder="Select SSC Passing Year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {allYears.map((y) => (
+                            <SelectItem key={`ssc-${y}`} value={y}>{y}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       {errors.sscYear && touched.sscYear && (
                         <p className="text-red-500 text-sm flex items-center mt-1">
                           <AlertCircle className="h-4 w-4 mr-1" />
@@ -850,6 +968,10 @@ function RouteComponent() {
                         value={formData.hscRoll}
                         onChange={handleChange}
                         onBlur={handleBlur}
+                        inputMode="numeric"
+                        pattern="[0-9]{6}"
+                        title="Enter exactly 6 digits"
+                        maxLength={6}
                         required
                         disabled={isLoading}
                       />
@@ -874,6 +996,10 @@ function RouteComponent() {
                         value={formData.hscRegistration}
                         onChange={handleChange}
                         onBlur={handleBlur}
+                        inputMode="numeric"
+                        pattern="[0-9]{10}"
+                        title="Enter exactly 10 digits"
+                        maxLength={10}
                         required
                         disabled={isLoading}
                       />
@@ -916,20 +1042,20 @@ function RouteComponent() {
                       <Label htmlFor="hscYear" className="text-gray-700 font-medium">
                         Passing Year
                       </Label>
-                      <Input
-                        type="number"
-                        id="hscYear"
-                        name="hscYear"
-                        placeholder="HSC Passing Year"
-                        min="1990"
-                        max={new Date().getFullYear()}
-                        className={`w-full px-4 py-3 border ${errors.hscYear ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition`}
+                      <Select
                         value={formData.hscYear}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        required
+                        onValueChange={(value) => handleSelectChange('hscYear', value)}
                         disabled={isLoading}
-                      />
+                      >
+                        <SelectTrigger className={`w-full ${errors.hscYear ? 'border-red-500' : 'border-gray-300'}`}>
+                          <SelectValue placeholder="Select HSC Passing Year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(hscEligibleYears.length ? hscEligibleYears : allYears).map((y) => (
+                            <SelectItem key={`hsc-${y}`} value={y}>{y}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       {errors.hscYear && touched.hscYear && (
                         <p className="text-red-500 text-sm flex items-center mt-1">
                           <AlertCircle className="h-4 w-4 mr-1" />
@@ -994,6 +1120,10 @@ function RouteComponent() {
                         value={formData.dakhilRoll}
                         onChange={handleChange}
                         onBlur={handleBlur}
+                        inputMode="numeric"
+                        pattern="[0-9]{6}"
+                        title="Enter exactly 6 digits"
+                        maxLength={6}
                         required
                         disabled={isLoading}
                       />
@@ -1018,6 +1148,10 @@ function RouteComponent() {
                         value={formData.dakhilRegistration}
                         onChange={handleChange}
                         onBlur={handleBlur}
+                        inputMode="numeric"
+                        pattern="[0-9]{10}"
+                        title="Enter exactly 10 digits"
+                        maxLength={10}
                         required
                         disabled={isLoading}
                       />
@@ -1060,20 +1194,20 @@ function RouteComponent() {
                       <Label htmlFor="dakhilYear" className="text-gray-700 font-medium">
                         Passing Year
                       </Label>
-                      <Input
-                        type="number"
-                        id="dakhilYear"
-                        name="dakhilYear"
-                        placeholder="Dakhil Passing Year"
-                        min="1990"
-                        max={new Date().getFullYear()}
-                        className={`w-full px-4 py-3 border ${errors.dakhilYear ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition`}
+                      <Select
                         value={formData.dakhilYear}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        required
+                        onValueChange={(value) => handleSelectChange('dakhilYear', value)}
                         disabled={isLoading}
-                      />
+                      >
+                        <SelectTrigger className={`w-full ${errors.dakhilYear ? 'border-red-500' : 'border-gray-300'}`}>
+                          <SelectValue placeholder="Select Dakhil Passing Year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {allYears.map((y) => (
+                            <SelectItem key={`dakhil-${y}`} value={y}>{y}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       {errors.dakhilYear && touched.dakhilYear && (
                         <p className="text-red-500 text-sm flex items-center mt-1">
                           <AlertCircle className="h-4 w-4 mr-1" />
@@ -1133,6 +1267,10 @@ function RouteComponent() {
                         value={formData.alimRoll}
                         onChange={handleChange}
                         onBlur={handleBlur}
+                        inputMode="numeric"
+                        pattern="[0-9]{6}"
+                        title="Enter exactly 6 digits"
+                        maxLength={6}
                         required
                         disabled={isLoading}
                       />
@@ -1157,6 +1295,10 @@ function RouteComponent() {
                         value={formData.alimRegistration}
                         onChange={handleChange}
                         onBlur={handleBlur}
+                        inputMode="numeric"
+                        pattern="[0-9]{10}"
+                        title="Enter exactly 10 digits"
+                        maxLength={10}
                         required
                         disabled={isLoading}
                       />
@@ -1199,20 +1341,20 @@ function RouteComponent() {
                       <Label htmlFor="alimYear" className="text-gray-700 font-medium">
                         Passing Year
                       </Label>
-                      <Input
-                        type="number"
-                        id="alimYear"
-                        name="alimYear"
-                        placeholder="Alim Passing Year"
-                        min="1990"
-                        max={new Date().getFullYear()}
-                        className={`w-full px-4 py-3 border ${errors.alimYear ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition`}
+                      <Select
                         value={formData.alimYear}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        required
+                        onValueChange={(value) => handleSelectChange('alimYear', value)}
                         disabled={isLoading}
-                      />
+                      >
+                        <SelectTrigger className={`w-full ${errors.alimYear ? 'border-red-500' : 'border-gray-300'}`}>
+                          <SelectValue placeholder="Select Alim Passing Year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(alimEligibleYears.length ? alimEligibleYears : allYears).map((y) => (
+                            <SelectItem key={`alim-${y}`} value={y}>{y}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       {errors.alimYear && touched.alimYear && (
                         <p className="text-red-500 text-sm flex items-center mt-1">
                           <AlertCircle className="h-4 w-4 mr-1" />
