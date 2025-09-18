@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button'
 export default function UniversitiesSection() {
   const [rows, setRows] = useState<EligibleInstitution[]>([])
   const [loading, setLoading] = useState(true)
-  const [profile, setProfile] = useState<User | null>(null)
   const [missingFields, setMissingFields] = useState<string[]>([])
   const navigate = useNavigate()
 
@@ -24,7 +23,6 @@ export default function UniversitiesSection() {
         ])
         setRows(data)
         const merged: User | null = p && a ? { ...p, ...a } : (p || a)
-        setProfile(merged)
         setMissingFields(getRequiredMissing(merged))
       } finally {
         setLoading(false)
